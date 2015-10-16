@@ -1,0 +1,71 @@
+# man page colors for tcsh/csh
+# uses less for the default pager
+# append to ~/.tcshrc or ~/.cshrc
+#
+# mb: fires upon entering blinking mode
+# md: fires upon entering double-bright mode
+# me: fires upon exiting blinking/double-bright modes
+#
+# so: fires upon entering standout mode
+# se: fires upon exiting standout mode
+#
+# us: fires upon entering underline mode
+# ue: fires upon exiting underline mode
+#
+# AF: sets foreground color for a given mode
+# AB: sets background color for a given mode
+#
+# color      value
+#
+# black      0
+# red        1
+# green      2
+# yellow     3
+# blue       4
+# magenta    5
+# cyan       6
+# white      7
+
+# set the environment pager to invoke less when viewing man pages
+setenv PAGER "less -IRs"
+
+# invoked when entering blinking mode: fg red, bg default
+setenv LESS_TERMCAP_mb `echotc AF 1`
+
+# invoked when entering double-bright mode: fg green, bg default
+setenv LESS_TERMCAP_md `echotc AF 2`
+
+# invoked when leaving blinking & double-bright modes
+setenv LESS_TERMCAP_me `echotc me`
+
+# invoked when entering standout mode fg yellow, bg red
+setenv LESS_TERMCAP_so `echotc AF 3; echotc AB 1`
+
+# invoked when leaving standout mode
+setenv LESS_TERMCAP_se `echotc me`
+
+# invoked when entering underline mode fg cyan, bg default
+setenv LESS_TERMCAP_us `echotc AF 6`
+
+# invoked when leaving underline mode
+setenv LESS_TERMCAP_ue `echotc me`
+
+# eof
+
+# aliases
+alias ll ls -l
+alias lal ls -al
+
+setenv CLICOLOR 1                     # Use colors (if possible)
+setenv LSCOLORS ExGxFxdxCxDxDxBxBxExEx
+
+set prompt="%B\n%{\033[35m%}%T %{\033[31m%}%n%{\033[35m%}@%{\033[34m%}%m %{\033[33m%}%~%{\033[35m%} \n%{\033[1;32m%}%# %{\033[37m%}%b"
+set editor=vim
+if ($?tcsh && $?prompt) then
+        bindkey "\e[1~" beginning-of-line # Home
+        bindkey "\e[7~" beginning-of-line # Home rxvt
+        bindkey "\e[2~" overwrite-mode    # Ins
+        bindkey "\e[3~" delete-char       # Delete
+        bindkey "\e[4~" end-of-line       # End
+        bindkey "\e[8~" end-of-line       # End rxvt
+endif
