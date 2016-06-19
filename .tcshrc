@@ -84,3 +84,9 @@ set autolist=ambiguous
 
 # search in history with Ctrl+R
 bindkey "^R" i-search-back
+
+# autostart ssh-agent
+if ( ! ($?SSH_AUTH_SOCK) ) then
+  eval `ssh-agent -c`
+  ssh-add ~/.ssh/id_rsa
+endif
