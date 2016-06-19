@@ -59,8 +59,17 @@ alias lal ls -al
 setenv CLICOLOR 1                     # Use colors (if possible)
 setenv LSCOLORS ExGxFxdxCxDxDxBxBxExEx
 
-set prompt="%B\n%{\033[35m%}%T %{\033[31m%}%n%{\033[35m%}@%{\033[34m%}%m %{\033[33m%}%~%{\033[35m%} \n%{\033[1;32m%}%# %{\033[37m%}%b"
+# git completion
+# source ~/.git-completion.tcsh
+
+# set prompt; with current git branch if available.
+# alias __git_current_branch 'git rev-parse --abbrev-ref HEAD >& /dev/null && echo "(`git rev-parse --abbrev-ref HEAD`)"'
+
+# set prompt="%B\n%{\033[35m%}%T %{\033[2;31m%}%n%{\033[1;30m%}@%m %{\033[33m%}%~%{\033[35m%} %{\033[34m%}`__git_current_branch` \n%{\033[32m%}%# %{\033[37m%}%b"
+set prompt="%B\n%{\033[35m%}%T %{\033[2;31m%}%n%{\033[1;30m%}@%m %{\033[33m%}%~%{\033[35m%} \n%{\033[32m%}%# %{\033[37m%}%b"
+
 set editor=vim
+
 if ($?tcsh && $?prompt) then
         bindkey "\e[1~" beginning-of-line # Home
         bindkey "\e[7~" beginning-of-line # Home rxvt
@@ -69,3 +78,9 @@ if ($?tcsh && $?prompt) then
         bindkey "\e[4~" end-of-line       # End
         bindkey "\e[8~" end-of-line       # End rxvt
 endif
+
+# It will tell tcsh to list the possible completion choices
+set autolist=ambiguous
+
+# search in history with Ctrl+R
+bindkey "^R" i-search-back
