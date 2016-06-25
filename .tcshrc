@@ -60,13 +60,10 @@ setenv CLICOLOR 1                     # Use colors (if possible)
 setenv LSCOLORS ExGxFxdxCxDxDxBxBxExEx
 
 # git completion
-# source ~/.git-completion.tcsh
+source ~/.git-completion.tcsh
 
-# set prompt; with current git branch if available.
-# alias __git_current_branch 'git rev-parse --abbrev-ref HEAD >& /dev/null && echo "(`git rev-parse --abbrev-ref HEAD`)"'
-
-# set prompt="%B\n%{\033[35m%}%T %{\033[2;31m%}%n%{\033[1;30m%}@%m %{\033[33m%}%~%{\033[35m%} %{\033[34m%}`__git_current_branch` \n%{\033[32m%}%# %{\033[37m%}%b"
-set prompt="%B\n%{\033[35m%}%T %{\033[2;31m%}%n%{\033[1;30m%}@%m %{\033[33m%}%~%{\033[35m%} \n%{\033[32m%}%# %{\033[37m%}%b"
+alias __git_current_repo_status 'perl $HOME/dotfiles/gitprompt.pl'
+alias precmd 'set prompt="%B\n%{\033[35m%}%T %{\033[2;31m%}%n%{\033[1;30m%}@%m %{\033[33m%}%~ %{\033[1;36m%}`__git_current_repo_status` \n%{\033[32m%}%# %{\033[37m%}%b"'
 
 set editor=vim
 
