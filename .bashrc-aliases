@@ -5,3 +5,5 @@ alias dmesg="dmesg --color=always"
 
 alias lal="ls -al"
 alias ll="ls -l"
+
+alias cclip='xclip -selection clipboard'
