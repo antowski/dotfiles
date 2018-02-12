@@ -7,3 +7,4 @@ ln -s /usr/local/share/git-core/contrib/completion/git-completion.tcsh  ~/.git-c
 ln -s /usr/local/share/git-core/contrib/completion/git-completion.bash  ~/.git-completion.bash
 ln -s ~/dotfiles/.config/mc/mc.ext ~/.config/mc/mc.ext
 ln -s ~/dotfiles/.config/mpd/mpd.conf ~/.config/mpd/mpd.conf
+ln -s ~/dotfiles/.vimrc ~/.vimrc
