@@ -1,35 +1,69 @@
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
+" { ----------------------------- VUNDLE
+
 " set the runtime path to include Vundle and initialize
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 
-
 Plugin 'VundleVim/Vundle.vim'       " let Vundle manage Vundle, required
+
+"---------=== Code/project navigation ===-------------
+Plugin 'scrooloose/nerdtree'            " A tree explorer plugin for vim
+Plugin 'Shougo/unite.vim'               " Navigation between buffers and files
+Plugin 'majutsushi/tagbar'              " Class/module browser
+"
+"------------------=== Other ===----------------------
+Plugin 'bling/vim-bufferline'           " how the list of buffers in the command bar. :help bufferline
+Plugin 'vim-airline/vim-airline'        " Lean & mean status/tabline for vim that's light as air
+Plugin 'vim-airline/vim-airline-themes' " Themes for vim-airline
+
 Plugin 'sheerun/vim-wombat-scheme'
 
-" All of your Plugins must be added before the following line
 call vundle#end()            " required
+
+filetype on                  " required
+filetype plugin on           " required
 filetype plugin indent on    " required
 
-" To ignore plugin indent changes, instead use:
-"filetype plugin on
-"
-" Brief help
-" :PluginList       - lists configured plugins
-" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
-" :PluginSearch foo - searches for foo; append `!` to refresh local cache
-" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
-"
-" see :h vundle for more details or wiki for FAQ
-" Put your non-Plugin stuff after this line
+" } VUNDLE
 
 set number	" line numbers
 
 set tabstop=4
 set expandtab	" spaces instead of tabs
 set t_Co=256    " 256 colors
+set nowrap
 
 colorscheme wombat
+"set cursorline
 syntax on
+
+"NERDTree
+map <F1> :NERDTreeToggle<CR>    " browse the list of files in the current directory
+
+" Unite settings
+nnoremap <F2> :Unite buffer<CR> " browse a list of the currently opened buffers
+
+" TagBar settings
+map <F3> :TagbarToggle<CR>
+let g:tagbar_autofocus = 1      " autofocus on Tagbar open
+
+" { ------- vim-airline settings
+
+let g:airline_powerline_fonts = 1
+"let g:airline_symbols_ascii = 1
+
+if !exists('g:airline_symbols')
+    let g:airline_symbols = {}
+endif
+
+let g:airline_symbols.linenr = '≡'
+
+" airline-tabline
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
+
+"}
+
