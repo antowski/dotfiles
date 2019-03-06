@@ -13,9 +13,10 @@ Plugin 'VundleVim/Vundle.vim'       " let Vundle manage Vundle, required
 Plugin 'scrooloose/nerdtree'            " A tree explorer plugin for vim
 Plugin 'Shougo/unite.vim'               " Navigation between buffers and files
 Plugin 'majutsushi/tagbar'              " Class/module browser
+Plugin 'valloric/youcompleteme'         " autocomplition while typing
 "
 "------------------=== Other ===----------------------
-Plugin 'bling/vim-bufferline'           " how the list of buffers in the command bar. :help bufferline
+"Plugin 'bling/vim-bufferline'           " how the list of buffers in the command bar. :help bufferline
 Plugin 'vim-airline/vim-airline'        " Lean & mean status/tabline for vim that's light as air
 Plugin 'vim-airline/vim-airline-themes' " Themes for vim-airline
 
@@ -34,10 +35,10 @@ set number	" line numbers
 set tabstop=4
 set expandtab	" spaces instead of tabs
 set t_Co=256    " 256 colors
-set nowrap
+set wrap
 
 colorscheme wombat
-"set cursorline
+set cursorline
 syntax on
 
 "NERDTree
@@ -61,9 +62,18 @@ endif
 
 let g:airline_symbols.linenr = '≡'
 
+set noshowmode
 " airline-tabline
 let g:airline#extensions#tabline#enabled = 1
+"let g:airline#extensions#tabline#showtabs = 1
+"let g:airline#extensions#tabline#show_buffers = 0
 let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
+"let g:airline#extensions#bufferline#enabled = 0
+let g:airline_section_c = '%t'
+" }
 
-"}
+" { ------ YouCompleteMe settings
 
+nmap <C-F1> :YcmCompleter GetDoc<CR>
+
+" }
