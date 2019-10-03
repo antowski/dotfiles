@@ -21,6 +21,7 @@ Plugin 'vim-airline/vim-airline'        " Lean & mean status/tabline for vim tha
 Plugin 'vim-airline/vim-airline-themes' " Themes for vim-airline
 
 Plugin 'sheerun/vim-wombat-scheme'
+Plugin 'jiangmiao/auto-pairs'           " auto close brackets
 
 call vundle#end()            " required
 
@@ -77,3 +78,24 @@ let g:airline_section_c = '%t'
 nmap <C-F1> :YcmCompleter GetDoc<CR>
 
 " }
+
+" hide/show statusbar by Shift+h
+let s:hidden_all = 0
+function! ToggleHiddenAll()
+    if s:hidden_all  == 0
+        let s:hidden_all = 1
+        set noshowmode
+        set noruler
+        set laststatus=0
+        set noshowcmd
+    else
+        let s:hidden_all = 0
+        set showmode
+        set ruler
+        set laststatus=2
+        set showcmd
+    endif
+endfunction
+
+nnoremap <S-h> :call ToggleHiddenAll()<CR>
+
