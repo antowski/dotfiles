@@ -75,6 +75,7 @@ let g:airline_section_c = '%t'
 
 " { ------ YouCompleteMe settings
 
+let g:ycm_server_python_interpreter = '/usr/bin/python2'
 nmap <C-F1> :YcmCompleter GetDoc<CR>
 
 " }
