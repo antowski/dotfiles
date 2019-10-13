@@ -16,12 +16,16 @@ Plugin 'majutsushi/tagbar'              " Class/module browser
 Plugin 'valloric/youcompleteme'         " autocomplition while typing
 "
 "------------------=== Other ===----------------------
-"Plugin 'bling/vim-bufferline'           " how the list of buffers in the command bar. :help bufferline
 Plugin 'vim-airline/vim-airline'        " Lean & mean status/tabline for vim that's light as air
 Plugin 'vim-airline/vim-airline-themes' " Themes for vim-airline
 
-Plugin 'sheerun/vim-wombat-scheme'
 Plugin 'jiangmiao/auto-pairs'           " auto close brackets
+
+"------------------=== colour scheme ===--------------
+Plugin 'sheerun/vim-wombat-scheme'
+Plugin 'tomasr/molokai'
+Plugin 'morhetz/gruvbox'
+Plugin 'nanotech/jellybeans.vim'
 
 call vundle#end()            " required
 
@@ -36,9 +40,10 @@ set number	" line numbers
 set tabstop=4
 set expandtab	" spaces instead of tabs
 set t_Co=256    " 256 colors
-set wrap
+set nowrap
 
-colorscheme wombat
+colorscheme jellybeans
+let g:jellybeans_use_term_italics = 1
 set cursorline
 syntax on
 
