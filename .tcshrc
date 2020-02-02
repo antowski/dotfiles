@@ -63,17 +63,17 @@ setenv LSCOLORS ExGxFxdxCxDxDxBxBxExEx
 source ~/.git-completion.tcsh
 
 alias __git_current_repo_status 'perl $HOME/dotfiles/gitprompt.pl'
-alias precmd 'set prompt="%B\n%{\033[35m%}%T %{\033[2;31m%}%n%{\033[1;30m%}@%m %{\033[33m%}%~ %{\033[1;36m%}`__git_current_repo_status` \n%{\033[32m%}%# %{\033[37m%}%b"'
+alias precmd 'set prompt="\n%{\033[35m%}%T %{\033[2;31m%}%n%{\033[1;30m%}@%m %{\033[33m%}%~ %{\033[1;36m%}`__git_current_repo_status` \n%{\033[32m%}%#%{\033[0m%} "'
 
 set editor=vim
 
 if ($?tcsh && $?prompt) then
-        bindkey "\e[1~" beginning-of-line # Home
-        bindkey "\e[7~" beginning-of-line # Home rxvt
-        bindkey "\e[2~" overwrite-mode    # Ins
-        bindkey "\e[3~" delete-char       # Delete
-        bindkey "\e[4~" end-of-line       # End
-        bindkey "\e[8~" end-of-line       # End rxvt
+    bindkey "\e[1~" beginning-of-line # Home
+    bindkey "\e[7~" beginning-of-line # Home rxvt
+    bindkey "\e[2~" overwrite-mode    # Ins
+    bindkey "\e[3~" delete-char       # Delete
+    bindkey "\e[4~" end-of-line       # End
+    bindkey "\e[8~" end-of-line       # End rxvt
 endif
 
 # It will tell tcsh to list the possible completion choices
@@ -83,7 +83,7 @@ set autolist=ambiguous
 bindkey "^R" i-search-back
 
 # autostart ssh-agent
-if ( ! ($?SSH_AUTH_SOCK) ) then
-  eval `ssh-agent -c`
-  ssh-add ~/.ssh/id_rsa
-endif
+#if ( ! ($?SSH_AUTH_SOCK) ) then
+#  eval `ssh-agent -c`
+#  ssh-add ~/.ssh/id_rsa
+#endif
