@@ -26,6 +26,8 @@ Plugin 'sheerun/vim-wombat-scheme'
 Plugin 'tomasr/molokai'
 Plugin 'morhetz/gruvbox'
 Plugin 'nanotech/jellybeans.vim'
+Plugin 'SirVer/ultisnips'
+Plugin 'honza/vim-snippets'
 
 call vundle#end()            " required
 
@@ -35,15 +37,31 @@ filetype plugin indent on    " required
 
 " } VUNDLE
 
-set number	" line numbers
+set number      " line numbers
 
 set tabstop=4
-set expandtab	" spaces instead of tabs
+set expandtab   " spaces instead of tabs
 set t_Co=256    " 256 colors
 set nowrap
+set encoding=utf-8
 
-colorscheme jellybeans
+" show whitespaces
+set listchars=tab:>>,nbsp:·,space:·,trail:~,extends:>,precedes:<
+set list
+
+" colourscheme
+
+" for truecolor support
+let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+set termguicolors
+
+let g:gruvbox_contrast_dark="hard"
+let g:gruvbox_italic=1
+set background=dark
+colorscheme gruvbox
 let g:jellybeans_use_term_italics = 1
+
 set cursorline
 syntax on
 
@@ -59,8 +77,8 @@ let g:tagbar_autofocus = 1      " autofocus on Tagbar open
 
 " { ------- vim-airline settings
 
-let g:airline_powerline_fonts = 1
-"let g:airline_symbols_ascii = 1
+"let g:airline_powerline_fonts = 1
+let g:airline_symbols_ascii = 1
 
 if !exists('g:airline_symbols')
     let g:airline_symbols = {}
