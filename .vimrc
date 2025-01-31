@@ -16,7 +16,7 @@ Plugin 'aklt/plantuml-syntax'
 Plugin 'scrooloose/nerdtree'            " A tree explorer plugin for vim
 Plugin 'Shougo/unite.vim'               " Navigation between buffers and files
 Plugin 'majutsushi/tagbar'              " Class/module browser
-Plugin 'valloric/youcompleteme'         " autocomplition while typing
+"Plugin 'valloric/youcompleteme'         " autocomplition while typing
 "
 "------------------=== Other ===----------------------
 Plugin 'vim-airline/vim-airline'        " Lean & mean status/tabline for vim that's light as air
