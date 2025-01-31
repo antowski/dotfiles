@@ -9,6 +9,9 @@ call vundle#begin()
 
 Plugin 'VundleVim/Vundle.vim'       " let Vundle manage Vundle, required
 
+"-----------------=== syntax ===----------------------
+Plugin 'aklt/plantuml-syntax'
+
 "---------=== Code/project navigation ===-------------
 Plugin 'scrooloose/nerdtree'            " A tree explorer plugin for vim
 Plugin 'Shougo/unite.vim'               " Navigation between buffers and files
