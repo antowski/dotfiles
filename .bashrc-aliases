@@ -1,9 +1,208 @@
+MASTER_BRANCH='origin/master'
+TEAM_BRANCH='origin/master'
+DEV_BRANCH='origin/develop'
+
 alias ls='ls --color=auto'
+alias lal="ls -al"
+alias ll="ls -l"
+
 alias diff='diff --color=auto'
 alias grep='grep --color=auto'
 alias dmesg="dmesg --color=always"
 
-alias lal="ls -al"
-alias ll="ls -l"
-
 alias cclip='xclip -selection clipboard'
+
+# i'm so la-z-z-z-z-z-y
+alias ld=lazydocker
+alias lg=lazygit
+
+# git
+
+function checkout-branch() {
+  git branch -a |
+    grep --invert-match '\*' |
+    cut -c 3- |
+    fzf --preview="git hist {} --" --preview-window 'down'|
+    sed "s/^remotes\/origin\///" |
+    xargs --no-run-if-empty git checkout
+}
+
+function is-branch-merged-into() {
+    git branch --merged $2 2>&1 | grep $1 > /dev/null
+}
+
+function is-remote-branch-exists() {
+    BRANCH=origin/$1
+    # git ls-remote --heads --exit origin $BRANCH > /dev/null 2>&1
+    git branch -vv | grep -E "\[$BRANCH(: .*)?\]" | grep --invert-match "\[$BRANCH: gone\]" > /dev/null 2>&1
+}
+
+function for-delete-branch-presentation() {
+    BRANCH=$1
+    M=$(is-branch-merged-into $BRANCH $MASTER_BRANCH && echo "M" || echo " ")
+    D=$(is-branch-merged-into $BRANCH $DEV_BRANCH && echo "D" || echo " ")
+    # T=$(is-branch-merged-into $BRANCH $TEAM_BRANCH && echo "T" || echo " ")
+    R=$(is-remote-branch-exists $BRANCH && echo "R" || echo ' ')
+    echo "$M$D$T$R $BRANCH"
+}
+
+function delete-branch-force() {
+        PREVIEW='BRANCH=$(echo {} | cut -c 5-) \
+                && git branch -vv --list $BRANCH \
+                && echo \
+                && echo "$BRANCH merged into:" \
+                && git branch -r --contains $BRANCH | nl \
+                && echo \
+                && git log --graph --abbrev-commit --decorate --format=format:"%C(bold)%h%C(reset) - %C(bold)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %C(bold black)[%an]%C(reset)%C(bold yellow)%d%C(reset)" $BRANCH -30'
+
+
+    git branch |
+    grep --invert-match '\*' |
+    cut -c 3- |
+    while read branch ; do for-delete-branch-presentation $branch ; done |
+        #fzf --header "M/D/T - merged into master/develop/team ($TEAM_BRANCH) branch; R - remote branch exists" --layout=reverse\
+        fzf --header "M/D - merged into master/develop branch; R - remote branch exists" --layout=reverse\
+                --multi --preview-window 'down'\
+                --preview="$PREVIEW" |
+    cut -c 4- |
+    xargs --no-run-if-empty git branch --delete --force
+}
+
+function git-stat() {
+    #from="1 Jun, 2018"
+    #to="17 Aug, 2018"
+    from="3 month ago"
+    to="now"
+    users=$(git shortlog -sn --no-merges --since="$from" --before="$to" | awk '{printf "%s %s\n", $2, $3}')
+    IFS=$'\n'
+    echo -e "User name;Files changed;Lines added;Lines deleted;Total lines (delta);Add./Del. ratio (1:n);Commit count" | column -t
+
+    for userName in $users
+    do
+         userName=${userName#ST_DOMAIN\\}
+         result=$(git log --author="$userName" --no-merges --shortstat --since="$from" --before="$to"\
+                 | grep -E "fil(e|es) changed"\
+                 | awk '{files+=$1; inserted+=$4; deleted+=$6; delta+=$4-$6; ratio=deleted/inserted} END\
+                        {printf "%7s %7s %7s %7s %.2f", files, inserted, deleted, delta, ratio }' -)
+         countCommits=$(git shortlog -sn --no-merges  --since="$from" --before="$to" --author="$userName" | awk '{print $1}')
+         if [[ ${result} != ';;;;' ]]
+         then
+            echo -e "$userName;$result;$countCommits" | column -t
+         fi
+    done
+}
+
+function git-branch-delete-origin() {
+    branch=$(echo $1 | sed -r 's/^origin\///')
+    echo "git push origin --delete $branch"
+    git push origin --delete $branch
+}
+
+function git-create-pull-request() {
+
+    # bitbucket repository
+    remoteUrl=$(git remote get-url origin)
+    case "$remoteUrl" in
+        *hypothesis.git)                repoUrl='https://code.alfabank.by/projects/ABO/repos/hypothesis' ;;
+        *payments2b-erip-server.git)    repoUrl='https://code.alfabank.by/projects/PAYMENTS2B/repos/payments2b-erip-server' ;;
+        *wsoapi/api.git)                repoUrl='https://code.alfabank.by/projects/WSOAPI/repos/api' ;;
+        *)                              repoUrl='https://code.alfabank.by/projects/ABO/repos/apps' ;;
+    esac
+
+    # current branch
+    currBranch=$(git rev-parse --abbrev-ref HEAD)
+    src=$(printf 'refs/heads/%s' "$currBranch" | jq -sRr @uri)
+    encodedSrc=
+
+    # destination branch choosed by fzf from remote branches
+    selectedBranch=$(gb -r | cut -c 3- | fzf | sed -r 's/^origin\///')
+    dst=$(printf 'refs/heads/%s' "$selectedBranch" | jq -sRr @uri)
+
+    # url to create pull request
+    url=$(printf '%s/pull-requests?create&sourceBranch=%s&targetBranch=%s' "$repoUrl" "$src" "$dst")
+
+    [[ ! -z $selectedBranch ]] && xdg-open $url
+}
+
+function git-create-commit-message() {
+    # настройки
+    jiraUrl='https://projects.alfabank.by'
+    token=`cat ~/.config/jira.token`
+    maxIssues=30
+    commitMsgTemplate='%s :%s\n\n%s/browse/%s'
+
+    jiraSearchApi='https://projects.alfabank.by/rest/api/2/search?'
+
+    # получаем список issues текущего пользователя из jira
+
+    # запрос JQL
+    jql='assignee=currentUser() AND status not in (done) ORDER BY updated DESC'
+    jqlEncoded=`printf %s "$jql" | jq -sRr @uri`
+    #fields='parent,summary,created,versions,status,issuetype'
+    fields='summary'
+    url=`printf '%s/rest/api/2/search?maxResults=%s&fields=%s&jql=%s' $jiraUrl $maxIssues $fields $jqlEncoded`
+
+    # выбор issue
+    issue=`curl -s \
+            -X GET \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $token" \
+            $url |
+
+            jq --raw-output '.issues[] | .key + " " + .fields.summary' |
+            fzf
+            `
+
+    # формируем текста коммита
+
+    # выводим в stdout и копируем в буфер обмена
+    if [ -n "$issue" ]; then
+        key=`echo "$issue" | awk  '{print $1;}'`
+        summary=`echo "$issue" | awk  '{$1 = ""; $2=$2; print $0;}'`
+        #echo "$key"
+        #echo "$summary"
+        msg=`printf "$commitMsgTemplate" $key "$summary" $jiraUrl $key`
+        #echo -n "$msg" | tee stdout | xclip -sel clipboard
+        echo -n "$msg" | xclip -sel clipboard
+
+        echo 'Заготовка commit-message (скопировано в буфер обмена):'
+        echo ''
+        echo "$msg"
+    fi
+}
+
+function print_kbd_layout()
+{
+  case "$(xset -q|grep LED| awk '{ print $10 }')" in
+    "00000002") echo "En" ;;
+    "00000012") echo "Ru" ;;
+    *) echo "unknown" ;;
+  esac
+}
+
+alias git_backup_current_branch='git branch -m backup/$(git rev-parse --abbrev-ref HEAD)'
+
+alias gb='git branch'
+alias gbcb='git_backup_current_branch'
+alias gbD='delete-branch-force'
+alias gbdo='git-branch-delete-origin'
+alias gbuu='git branch --unset-upstream'
+alias gc='git checkout'
+alias gco='checkout-branch'
+alias gcb='git checkout -b'
+alias gcm='git-create-commit-message'
+alias gcpr='git-create-pull-request'
+alias gdt='~/tools/git-diff-tasks.sh'
+alias gfp='git fetch -p'
+alias gl='git pull'
+alias glh='git log HEAD..'
+alias gp='git push'
+alias gpsu='git push --set-upstream origin $(git rev-parse --abbrev-ref HEAD)'
+alias gst='git-stat'
+
+source ~/docs/dotfiles/complete_alias
+
+complete -F _complete_alias gb
+complete -F _complete_alias gc
+complete -F _complete_alias gl
+complete -F _complete_alias gp
